@@ -1,15 +1,30 @@
 .react-calendar-timeline .rct-vertical-lines .rct-vl {
-    position: absolute;
-    border-left: 1px dashed #C6C9CC;
-    z-index: 30;
+  position: absolute;
+  border-left: 1px dashed #c6c9cc;
+  z-index: 30;
 }
 
 .react-calendar-timeline .rct-header-root {
-    background: white;
-    border-bottom: none;
+  background: white;
+  border-bottom: none;
 }
 
 .react-calendar-timeline .rct-calendar-header {
-    border: none;
-    border-left: 1px solid #bbb;
+  border: none;
+  border-left: 1px solid #bbb;
+}
+
+.react-calendar-timeline .rct-horizontal-lines .rct-hl-odd {
+  background: none;
+}
+.react-calendar-timeline .rct-horizontal-lines .rct-hl-even, .react-calendar-timeline .rct-horizontal-lines .rct-hl-odd {
+  border-bottom: none;
+}
+
+.react-calendar-timeline .rct-sidebar .rct-sidebar-row {
+  border-bottom: none;
+}
+
+.react-calendar-timeline .rct-sidebar .rct-sidebar-row.rct-sidebar-row-odd {
+  background: none;
 }

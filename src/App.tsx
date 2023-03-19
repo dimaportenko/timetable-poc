@@ -27,7 +27,6 @@ const itemRenderer = ({ item, itemContext, getItemProps, getResizeProps }) => {
       // style.top = parseInt(style.top.replace("px", "")) + 48 + "px";
       actualMargin = 55;
     }
-
   }
   console.log("group", group);
   return (
@@ -106,7 +105,10 @@ const groupRenderer = ({ group }: { group: (typeof groups)[0] }) => {
         <tr>
           <td>
             <div className="flex flex-row items-center gap-1">
-              <div className="w-2 h-2 bg-blue-500 rounded-[2px]"></div>
+              <div
+                className="w-2 h-2 bg-blue-500 rounded-[2px]"
+                style={{ backgroundColor: group.status.color }}
+              />
               Actual
             </div>
           </td>
@@ -152,7 +154,7 @@ function App() {
               const { style, ...otherProps } = getRootProps();
               style.backgroundColor = "white";
               style.width -= 1;
-              console.log("sidebar", style);
+              // console.log("sidebar", style);
               return <div {...otherProps} style={style}></div>;
             }}
           </SidebarHeader>
@@ -268,7 +270,7 @@ function App() {
           {({ styles, date }) => {
             // console.warn(styles);
             styles.backgroundColor = "#2E75CC";
-            styles.backgroundColor = "red";
+            // styles.backgroundColor = "red";
             styles.width = "1px";
             styles.zIndex = 999;
             return (
@@ -283,7 +285,7 @@ function App() {
                     height: "7px",
                     left: styles.left - 3,
                     borderRadius: "50%",
-                    backgroundColor: "red",
+                    backgroundColor: "#2E75CC",
                   }}
                 />
                 <div style={styles} />
