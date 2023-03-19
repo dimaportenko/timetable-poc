@@ -1,0 +1,15 @@
+.react-calendar-timeline .rct-vertical-lines .rct-vl {
+    position: absolute;
+    border-left: 1px dashed #C6C9CC;
+    z-index: 30;
+}
+
+.react-calendar-timeline .rct-header-root {
+    background: white;
+    border-bottom: none;
+}
+
+.react-calendar-timeline .rct-calendar-header {
+    border: none;
+    border-left: 1px solid #bbb;
+}
