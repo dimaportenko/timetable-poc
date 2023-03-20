@@ -7,15 +7,22 @@ export const _groups = [
   { id: 4, title: "Unit 1" },
 ];
 
-export const items = [
+export type ItemType = {
+  id: number;
+  group: number;
+  title: string;
+  start_time: number;
+  end_time: number;
+  planned?: boolean;
+
+};
+export const items: ItemType[] = [
   {
     id: 1,
     group: 1,
     title: "item 1",
     start_time: dayjs().add(-4, "day").toDate(),
     end_time: dayjs().add(12, "day").toDate(),
-    canMove: false,
-    canResize: false,
     planned: true,
   },
   {

@@ -1,5 +1,7 @@
 import Timeline, {
   CustomHeader,
+  CustomHeaderPropsChildrenFnProps,
+  ReactCalendarItemRendererProps,
   SidebarHeader,
   TimelineHeaders,
   TodayMarker,
@@ -12,23 +14,21 @@ import dayjs from "dayjs";
 import { groups, items } from "./data";
 import { classNames } from "./classnames";
 
-const itemRenderer = ({ item, itemContext, getItemProps, getResizeProps }) => {
-  const { style, ...itemProps } = getItemProps(item.itemProps);
+const itemRenderer = ({
+  item,
+  itemContext,
+  getItemProps,
+}: ReactCalendarItemRendererProps<(typeof items)[0]>) => {
+  const { style, ...itemProps } = getItemProps({});
   const isPlanned = item.planned;
-  // const group = groups.find((group) => group.id === item.group);
-  const { group } = itemContext.dimensions.order;
-  // console.log("style", style);
-  // console.log("itemsProps", itemProps);
-  // console.log("itemContext", itemContext);
+  const group = itemContext.dimensions.order
+    .group as unknown as (typeof groups)[0];
+
   let actualMargin = 0;
-  if (!group.overlap) {
-    // parse the style.top to remove the px
-    if (!isPlanned) {
-      // style.top = parseInt(style.top.replace("px", "")) + 48 + "px";
-      actualMargin = 55;
-    }
+  if (!isPlanned) {
+    actualMargin = 55;
   }
-  console.log("group", group);
+
   return (
     <div
       {...itemProps}
@@ -44,12 +44,8 @@ const itemRenderer = ({ item, itemContext, getItemProps, getResizeProps }) => {
         fontSize: 10,
         marginTop: (isPlanned ? 24 : actualMargin) + 5,
       }}
-      // className={classNames(isPlanned ? "bg-gray-300" : "bg-blue-300")}
     >
-      <div
-        className={classNames(isPlanned ? "text-black" : "text-white")}
-        // style={{ maxHeight: `${itemContext.dimensions.height}` }}
-      >
+      <div className={classNames(isPlanned ? "text-black" : "text-white")}>
         {item.planned ? "Planned" : "Actual"}
       </div>
     </div>
@@ -66,9 +62,6 @@ const groupRenderer = ({ group }: { group: (typeof groups)[0] }) => {
 
   return (
     <div className="leading-5">
-      {/* <div className=""> */}
-      {/*   <div>{group.title}</div> */}
-      {/* </div> */}
       <table className="table-auto text-[10px] font-normal">
         <tr className="font-normal">
           <th></th>
@@ -89,7 +82,7 @@ const groupRenderer = ({ group }: { group: (typeof groups)[0] }) => {
           <td>
             {dayjs(plannedItem?.end_time).diff(plannedItem?.start_time, "day")}
           </td>
-          <td rowspan="2" className="pt-1">
+          <td rowSpan={2} className="pt-1">
             <div className="flex flex-row bg-gray-100 rounded-md overflow-hidden mt-1">
               <div
                 className={`h-100% w-2 overflow-hidden`}
@@ -126,7 +119,6 @@ const groupRenderer = ({ group }: { group: (typeof groups)[0] }) => {
 function App() {
   return (
     <div className="App">
-      {/* <div className="flex"> */}
       <Timeline
         groups={groups}
         items={items.map((item) => ({
@@ -136,7 +128,6 @@ function App() {
         }))}
         defaultTimeStart={dayjs().add(-30, "day").toDate()}
         defaultTimeEnd={dayjs().add(30, "day").toDate()}
-        // itemHeightRatio={0.75}
         canMove={false}
         canResize={false}
         // @ts-ignore
@@ -144,7 +135,7 @@ function App() {
         sidebarWidth={350}
         lineHeight={55}
         itemHeightRatio={0.95}
-        stackItems
+        stackItems={false}
         groupRenderer={groupRenderer}
         itemRenderer={itemRenderer}
       >
@@ -153,34 +144,33 @@ function App() {
             {({ getRootProps }) => {
               const { style, ...otherProps } = getRootProps();
               style.backgroundColor = "white";
-              style.width -= 1;
+              style.width = (style.width as number) - 1;
               // console.log("sidebar", style);
               return <div {...otherProps} style={style}></div>;
             }}
           </SidebarHeader>
-          {/* <SidebarHeader variant="right" headerData={{ someData: "extra" }}> */}
-          {/*   {({ getRootProps, data }) => { */}
-          {/*     return <div {...getRootProps()}>Right {data.someData}</div>; */}
-          {/*   }} */}
-          {/* </SidebarHeader> */}
           <CustomHeader
             // height={50}
             headerData={{ someData: "data" }}
             unit="year"
           >
-            {({
-              headerContext: { intervals },
-              getRootProps,
-              getIntervalProps,
-              showPeriod,
-              data,
-            }) => {
+            {(props) => {
+              if (!props) {
+                return null;
+              }
+              const {
+                headerContext: { intervals },
+                getRootProps,
+                getIntervalProps,
+                // showPeriod,
+              } = props;
+
               return (
                 <div {...getRootProps()}>
                   {intervals.map((interval) => {
                     const intervalStyle = {
                       lineHeight: "30px",
-                      textAlign: "center",
+                      // textAlign: "center",
                       border: "none",
                       // borderLeft: "5px solid black",
                       cursor: "pointer",
@@ -189,9 +179,9 @@ function App() {
                     };
                     return (
                       <div
-                        onClick={() => {
-                          showPeriod(interval.startTime, interval.endTime);
-                        }}
+                        // onClick={() => {
+                        //   showPeriod(interval.startTime, interval.endTime);
+                        // }}
                         {...getIntervalProps({
                           interval,
                           style: intervalStyle,
@@ -209,51 +199,37 @@ function App() {
           </CustomHeader>
           <CustomHeader
             // height={50}
-            headerData={{ someData: "data" }}
+            headerData={{}}
             unit="month"
           >
-            {({
-              headerContext: { intervals },
-              getRootProps,
-              getIntervalProps,
-              showPeriod,
-              data,
-            }) => {
+            {(props: CustomHeaderPropsChildrenFnProps<{}> | undefined) => {
+              if (!props) return null;
+              const {
+                headerContext: { intervals },
+                getRootProps,
+                getIntervalProps,
+              } = props;
               return (
                 <div {...getRootProps()}>
                   {intervals.map((interval) => {
                     const intervalStyle = {
                       lineHeight: "30px",
-                      textAlign: "center",
                       border: "none",
-                      // borderLeft: "5px solid black",
                       cursor: "pointer",
                       backgroundColor: "white",
                       color: "black",
                     };
-                    console.log("interval", interval);
                     return (
                       <div
-                        onClick={() => {
-                          showPeriod(interval.startTime, interval.endTime);
-                        }}
                         {...getIntervalProps({
                           interval,
                           style: intervalStyle,
                         })}
                       >
                         <div className="items-start">
-                          {/* <div className="flex flex-row"> */}
                           <div className="left-0 ml-[-50px] w-[100px] ">
                             {interval.startTime.format("MMM")}
                           </div>
-
-                          {/* <div className="flex flex-row justify-around bg-blue-100"> */}
-                          {/*   <div>week 1</div> */}
-                          {/*   <div>week 2</div> */}
-                          {/*   <div>week 3</div> */}
-                          {/* </div> */}
-                          {/* </div> */}
                         </div>
                       </div>
                     );
@@ -262,28 +238,21 @@ function App() {
               );
             }}
           </CustomHeader>
-          {/* <DateHeader unit="year" style={{ backgroundColor: "white" }} /> */}
-          {/* <DateHeader unit="month" /> */}
         </TimelineHeaders>
 
         <TodayMarker date={new Date()}>
-          {({ styles, date }) => {
-            // console.warn(styles);
+          {({ styles }) => {
             styles.backgroundColor = "#2E75CC";
-            // styles.backgroundColor = "red";
             styles.width = "1px";
-            styles.zIndex = 999;
+            styles.zIndex = 100;
             return (
-              // date is value of current date. Use this to render special styles for the marker
-              // or any other custom logic based on date:
-              // e.g. styles = {...styles, backgroundColor: isDateInAfternoon(date) ? 'red' : 'limegreen'}
-              <div style={{ zIndex: 999, backgroundColor: "pink" }}>
+              <div>
                 <div
                   style={{
                     ...styles,
                     width: "7px",
                     height: "7px",
-                    left: styles.left - 3,
+                    left: (styles.left as number) - 3,
                     borderRadius: "50%",
                     backgroundColor: "#2E75CC",
                   }}
@@ -294,7 +263,6 @@ function App() {
           }}
         </TodayMarker>
       </Timeline>
-      {/* </div> */}
     </div>
   );
 }
